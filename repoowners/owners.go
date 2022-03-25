@@ -31,7 +31,7 @@ func NewRepoOwners(branch RepoBranch, c *client.Client) (RepoOwner, error) {
 	_, err := c.TopLevelApprovers(context.Background(), &b)
 	if err != nil {
 		if server.IsNoRepoOwner(err) {
-			return nil, nil
+			return nil, server.NoRepoOwner
 		}
 
 		return nil, err
