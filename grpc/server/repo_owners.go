@@ -4,14 +4,21 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/grpc/status"
+
 	"github.com/opensourceways/repo-owners-cache/cache"
 	"github.com/opensourceways/repo-owners-cache/protocol"
 )
 
-var noRepoOwner = fmt.Errorf("no repo owner")
+var NoRepoOwner = fmt.Errorf("no repo owner")
 
 func IsNoRepoOwner(err error) bool {
-	return err != nil && err.Error() == noRepoOwner.Error()
+	stu, ok := status.FromError(err)
+	if !ok {
+		return false
+	}
+
+	return stu.Message() == NoRepoOwner.Error()
 }
 
 type repoOwnersServer struct {
@@ -31,7 +38,7 @@ func (r *repoOwnersServer) loadRepoOwners(b *protocol.Branch) (cache.RepoOwner, 
 	}
 
 	if o == nil {
-		return nil, noRepoOwner
+		return nil, NoRepoOwner
 	}
 
 	return o, nil
